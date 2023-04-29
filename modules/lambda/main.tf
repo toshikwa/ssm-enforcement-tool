@@ -48,11 +48,6 @@ resource "aws_iam_role_policy_attachment" "default" {
 # <<<<<<<<<< IAM <<<<<<<<<< #
 
 # >>>>>>>>>> Lambda >>>>>>>>>> #
-data "archive_file" "lambda" {
-  type        = "zip"
-  source_file = "${local.lambda_dir}/bin/${var.name}"
-  output_path = "${local.lambda_dir}/archive/${var.name}.zip"
-}
 resource "aws_lambda_function" "default" {
   function_name    = "${var.app}_${var.name}_function"
   filename         = "${local.lambda_dir}/archive/${var.name}.zip"
@@ -61,7 +56,7 @@ resource "aws_lambda_function" "default" {
   runtime          = "go1.x"
   timeout          = "60"
   memory_size      = 128
-  source_code_hash = data.archive_file.lambda.output_base64sha256
+  source_code_hash = base64sha256(file("${local.lambda_dir}/cmd/${var.name}/main.go"))
   environment {
     variables = var.envs
   }
