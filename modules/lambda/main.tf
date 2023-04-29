@@ -47,29 +47,11 @@ resource "aws_iam_role_policy_attachment" "default" {
 }
 # <<<<<<<<<< IAM <<<<<<<<<< #
 
-# >>>>>>>>>> Command >>>>>>>>>> #
-resource "null_resource" "build" {
-  triggers = {
-    code_diff = join("", [
-      for file in fileset("${local.lambda_dir}/cmd/${var.name}/", "*.go")
-      : filebase64("${local.lambda_dir}/cmd/${var.name}/${file}")
-    ])
-  }
-  provisioner "local-exec" {
-    command = "cd ${local.lambda_dir}/cmd/${var.name} && GOARCH=amd64 GOOS=linux go build -o ../../bin/${var.name}"
-  }
-  provisioner "local-exec" {
-    command = "zip -j ${local.lambda_dir}/archive/${var.name}.zip ${local.lambda_dir}/bin/${var.name}"
-  }
-}
-# <<<<<<<<<< Command <<<<<<<<<< #
-
 # >>>>>>>>>> Lambda >>>>>>>>>> #
 data "archive_file" "lambda" {
   type        = "zip"
   source_file = "${local.lambda_dir}/bin/${var.name}"
   output_path = "${local.lambda_dir}/archive/${var.name}.zip"
-  depends_on  = [null_resource.build]
 }
 resource "aws_lambda_function" "default" {
   function_name    = "${var.app}_${var.name}_function"
