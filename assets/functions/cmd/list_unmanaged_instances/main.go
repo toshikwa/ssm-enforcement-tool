@@ -31,14 +31,11 @@ func Diff(sub, all []string) ([]string, error) {
 	// list diff
 	res := []string{}
 	i, j := 0, 0
-	for i < len(all) {
+	for j != len(sub) && i < len(all) {
 		if all[i] == sub[j] {
 			j += 1
 		} else {
 			res = append(res, all[i])
-		}
-		if j == len(sub) {
-			break
 		}
 		i += 1
 	}
