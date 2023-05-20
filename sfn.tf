@@ -55,11 +55,11 @@ resource "aws_sfn_state_machine" "default" {
           Type      = "Task"
           Resource  = module.attach_ssm_permission_lambda.function_arn
           InputPath = "$"
-          Next      = "WaitFor30Secs"
+          Next      = "WaitFor10Mins"
         }
-        WaitFor30Secs = {
+        WaitFor10Mins = {
           Type    = "Wait"
-          Seconds = 30
+          Seconds = 600
           Next    = "ListUnmanagedInstancesAgain"
         }
         ListUnmanagedInstancesAgain = {

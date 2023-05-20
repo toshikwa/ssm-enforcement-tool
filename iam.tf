@@ -18,3 +18,7 @@ resource "aws_iam_instance_profile" "ssm_agent_profile" {
   name = "${local.app}_profile"
   role = aws_iam_role.ssm_agent_role.name
 }
+resource "aws_iam_role_policy_attachment" "ssm_agent_role" {
+  role       = aws_iam_role.ssm_agent_role.name
+  policy_arn = data.aws_iam_policy.ssm_policy.arn
+}
